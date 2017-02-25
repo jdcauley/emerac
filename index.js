@@ -12,19 +12,16 @@ const jwtSecret = '0a6b944d-d2fb-46fc-a85e-0295c986cd9f';
 Promise = require('bluebird');
 
 // fetch controllers
-
-const controllers = {};
-
-console.log(__dirname);
+const Models = require('./db.js');
+const Controllers = {};
 
 var normalizedPath = path.join(__dirname, 'api/controllers');
 
 fs.readdirSync(normalizedPath).forEach(function(file) {
   var fileName = file.split('.');
-  controllers[fileName[0]] = require("./api/controllers/" + file);
+  Controllers[fileName[0]] = require("./api/controllers/" + file);
 });
 
-console.log(controllers);
 
 var apiPrefix = '/api/v1';
 const app = express();
@@ -46,7 +43,9 @@ app.get('/', function(req, res){
   res.status(200).json({apiStatus: 'ok'});
 });
 
-app.post(apiPrefix + '/users', controllers.user.create);
+// User Routes
+app.post(apiPrefix + '/users', Controllers.user.create);
+app.get(apiPrefix + '/users', Controllers.user.find);
 
 app.get('*', function(req, res){
 
@@ -55,23 +54,16 @@ app.get('*', function(req, res){
 });
 
 
-// models.waterline.initialize(models.config, function(err, models) {
-//   if(err) throw err;
-//   // console.log(models.collections);
-//   app.models = models.collections;
-//   app.connections = models.connections;
+Models.waterline.initialize(Models.config, function(err, models) {
+  if(err) throw err;
+
+  app.models = models.collections;
+  app.connections = models.connections;
  
-//   // Start Server
-//   var port = process.env.PORT || 3000;
-
-//   app.listen(port, () => {
-//     console.log('serving');
-//   });
-
-// });
-
-var port = process.env.PORT || 3000;
+  var port = process.env.PORT || 3000;
 
   app.listen(port, () => {
-    console.log('serving');
+    console.log('serving: http://localhost:' + port);
   });
+
+});
