@@ -2,7 +2,6 @@ var bcrypt = require('bcrypt');
 
 var User = {
   identity: 'user',
-  connection: 'postgres',
   attributes: {
 
     email: {

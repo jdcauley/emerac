@@ -1,21 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-
 const postgresAdapter = require('sails-postgresql');
 const Waterline = require('waterline');
-
-var migration = process.env.MIGRATE || 'alter';
-
 const orm = new Waterline();
 
-var normalizedPath = path.join(__dirname, 'api/models');
-
-fs.readdirSync(normalizedPath).forEach(function(file) {
-  var model = require("./api/models/" + file);
-  model.migrate = migration;
-  model = Waterline.Collection.extend(model);
-  orm.loadCollection(model);
-});
+var migration = process.env.MIGRATE || 'alter';
 
 const db = {
   adapters: {
@@ -29,5 +18,15 @@ const db = {
     }
   }
 };
+
+var normalizedPath = path.join(__dirname, 'api/models');
+
+fs.readdirSync(normalizedPath).forEach(function(file) {
+  var model = require("./api/models/" + file);
+  model.migrate = migration;
+  model.connection = 'postgres';
+  model = Waterline.Collection.extend(model);
+  orm.loadCollection(model);
+});
 
 module.exports = {waterline: orm, config: db};
