@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 
 var SALT_WORK_FACTOR = 10;
 const expressJwt = require('express-jwt');
-const jwtSecret = '0a6b944d-d2fb-46fc-a85e-0295c986cd9f';
+const jwtSecret = process.env.JWT_SECRET;
 
 Promise = require('bluebird');
 
