@@ -44,8 +44,19 @@ app.get('/', function(req, res){
 });
 
 // User Routes
-app.post(apiPrefix + '/users', Controllers.user.create);
-app.get(apiPrefix + '/users', Controllers.user.find);
+app.post( apiPrefix + '/users', Controllers.user.create );
+app.get( apiPrefix + '/users', expressJwt({secret: jwtSecret}), Controllers.user.find );
+app.get( apiPrefix + '/users/:id', expressJwt({secret: jwtSecret}), Controllers.user.findById );
+app.put( apiPrefix + '/users', expressJwt({secret: jwtSecret}), Controllers.user.update);
+app.delete( apiPrefix + '/api/v1/users/:id', expressJwt({secret: jwtSecret}), Controllers.user.destroy );
+
+// Auth Routes
+app.post( apiPrefix + '/auth', Controllers.auth.login );
+app.get( apiPrefix + '/auth/verify/:token', Controllers.auth.verifyEmail );
+app.post( apiPrefix + '/auth/password/reset/start', Controllers.auth.startPasswordReset );
+app.get( '/password/reset/:token', Controllers.auth.renderForm );
+app.post( apiPrefix + '/auth/password/reset/', Controllers.auth.savePasswordReset );
+
 
 app.get('*', function(req, res){
 
