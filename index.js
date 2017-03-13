@@ -39,9 +39,19 @@ app.use(function(req, res, next) {
 
 
 
-app.get('/', function(req, res){
-  res.status(200).json({apiStatus: 'ok'});
+app.get('/', (req, res) => {
+  res.status(200).json({
+    apiStatus: 'ok'
+  });
 });
+
+app.get('/api/v1/routes', (req, res) => {
+  
+  res.status(200).json({
+    endpoints: app._router.stack.filter(r => r.route).map(r => r.route.path)
+  })
+})
+
 
 // User Routes
 app.post( apiPrefix + '/users', Controllers.user.create );

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const postgresAdapter = require('sails-postgresql');
+const diskAdapter = require('sails-disk');
 const Waterline = require('waterline');
 const orm = new Waterline();
 
@@ -10,7 +11,7 @@ const db = {
   adapters: {
     postgresql: postgresAdapter
   },
-  connections: {
+   connections: {
     postgres: {
       adapter: 'postgresql',
       url: process.env.DATABASE_URL,
