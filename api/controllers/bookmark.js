@@ -18,11 +18,8 @@ BookmarkController.create = (req, res) => {
 
   newBookmark.userId = req.user.id;
 
-  console.log(newBookmark)
-
   mc.parse(newBookmark.url)
     .then((data) => { 
-      console.log(data)
 
       Object.assign(newBookmark, {
         url: data.url,
@@ -41,7 +38,6 @@ BookmarkController.create = (req, res) => {
 
       bookmarkQuery.exec(function(err, bookmark){
         if(err){
-          console.log(err)
           return res.status(500).json({
             error: err
           });
@@ -56,8 +52,6 @@ BookmarkController.create = (req, res) => {
   
     })
     .catch((err) => { 
-      console.log('merc error');
-      console.log(err)
 
       return res.status(500).json({
         error: err
