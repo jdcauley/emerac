@@ -26,7 +26,7 @@ AuthController.login = (req, res) => {
     }
 
     if(user){
-      console.log(user);
+
       bcrypt.compare(req.body.password, user.password, function(err, isMatch) {
         if(err){
           res.status(500).json({error: err});
@@ -37,7 +37,7 @@ AuthController.login = (req, res) => {
             email: user.email,
             id: user.id
           }, jwtSecret);
-          console.log(token);
+
           res.status(200).json({
             id: token,
             user_id: user.id
@@ -148,7 +148,7 @@ AuthController.savePasswordReset = (req, res) => {
   }
 
   User.update(decoded.id, {password: pass}, function(err, updatedUser){
-    console.log(updatedUser);
+
     if(err){
       res.status(500).json({error: err});
     }

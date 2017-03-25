@@ -67,6 +67,13 @@ app.post( apiPrefix + '/auth/password/reset/start', Controllers.auth.startPasswo
 app.get( '/password/reset/:token', Controllers.auth.renderForm );
 app.post( apiPrefix + '/auth/password/reset/', Controllers.auth.savePasswordReset );
 
+// Action Routes
+
+app.post( '/api/v1/bookmarks', expressJwt({secret: jwtSecret}), Controllers.bookmark.create );
+app.get( '/api/v1/bookmarks', expressJwt({secret: jwtSecret}), Controllers.bookmark.find );
+app.get( '/api/v1/bookmarks/:id', expressJwt({secret: jwtSecret}), Controllers.bookmark.findOne );
+app.delete( '/api/v1/bookmarks/:id', expressJwt({secret: jwtSecret}), Controllers.bookmark.destroy );
+
 
 app.get('*', function(req, res){
 
