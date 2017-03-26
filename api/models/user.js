@@ -31,6 +31,12 @@ var User = {
       required: true
     },
 
+    bookmarks: {
+      collection: 'bookmark',
+      via: 'users',
+      dominant: true
+    },
+
     toJSON: function() {
       var obj = this.toObject();
       delete obj.password;

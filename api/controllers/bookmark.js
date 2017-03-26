@@ -16,7 +16,7 @@ BookmarkController.create = (req, res) => {
     });
   }
 
-  newBookmark.userId = req.user.id;
+  newBookmark.users = req.user.id;
 
   mc.parse(newBookmark.url)
     .then((data) => { 
@@ -34,10 +34,11 @@ BookmarkController.create = (req, res) => {
         nextPage: data.next_page_url
       })
 
-      bookmarkQuery = Bookmark.findOrCreate(newBookmark);
+      bookmarkQuery = Bookmark.create(newBookmark);
 
       bookmarkQuery.exec(function(err, bookmark){
         if(err){
+          console.log(err)
           return res.status(500).json({
             error: err
           });
@@ -64,27 +65,33 @@ BookmarkController.create = (req, res) => {
 BookmarkController.find = (req, res) => {
 
   var Bookmark = req.app.models.bookmark;
+  var Users = req.app.models.user;
 
   var params = req.query;
 
-  var bookmarkQuery = {};
+  Users.findOne(req.user.id).populate('bookmarks').exec(function(err, user){
 
-  params.userId = req.user.id;
-
-  Bookmark.find(params).exec(function(err, bookmarks){
     if(err){
       res.status(500).json({
         error: err
       });
     }
-    if(bookmarks){
+    if(user){
 
       res.status(200).json({
-        bookmarks: bookmarks
+        bookmarks: user.bookmarks
       });
     }
+
+
+  })
+
+  // params.users = req.user.id;
+
+  // Bookmark.find(params).exec(function(err, bookmarks){
+   
     
-  });
+  // });
 
 }
 

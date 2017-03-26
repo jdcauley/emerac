@@ -3,10 +3,6 @@ var Bookmark = {
   identity: 'bookmark',
   attributes: {
 
-    userId: {
-      model: 'user'
-    },
-
     url: {
       type: 'string',
       default: null
@@ -60,6 +56,11 @@ var Bookmark = {
     nextPage: {
       type: 'string',
       default: null
+    },
+
+    users: {
+      collection: 'user',
+      via: 'bookmarks'
     },
 
     toJSON: function() {
