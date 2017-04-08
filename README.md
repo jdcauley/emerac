@@ -10,4 +10,4 @@ MIGRATE // db setting for waterline alter or safe
 SSL_STATUS // for db Connection
 JWT_SECRET // used for token gen
 POSTMARK_KEY // used for mail functions
-```
+```# express-api-boilerplate
