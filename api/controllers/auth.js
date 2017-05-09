@@ -16,20 +16,14 @@ AuthController.login = (req, res) => {
     });
   }
 
-  var User = req.app.models.user;
+  var User = req.app.models.User;
 
-  User.findOne({email: req.body.email}, function(err, user){
-
-    if(err){
-      
-      res.status(500).json({error: err});
-    }
-
-    if(user){
+  User.findOne({email: req.body.email})
+    .then(function(user){
 
       bcrypt.compare(req.body.password, user.password, function(err, isMatch) {
         if(err){
-          res.status(500).json({error: err});
+          return res.status(500).json({error: err});
         }
         if(isMatch){
 
@@ -38,99 +32,65 @@ AuthController.login = (req, res) => {
             id: user.id
           }, jwtSecret);
 
-          res.status(200).json({
+          return res.status(200).json({
             id: token,
             user_id: user.id
           });
         } else {
-          res.status(400).json({
+          return res.status(400).json({
             error: 'That password doesn\'t look right to me'
           });
         }
       });
-    } else {
-      res.status(400).json({
-        error: 'Looks like we can find you, have you signed up?'
-      });
-    }
-  });
 
-};
+    })
+    .catch(function(err){
+      return res.status(500).json({error: err});
+    })
 
-AuthController.verifyEmail = (req, res) => {
-
-  var token = req.params.token;
-  var decoded = jwt.verify(token, jwtSecret);
-
-  var User = req.app.models.user;
-
-  User.update(decoded.id, {emailVerified: true}, function(err, updatedUser){
-    
-    if(err){
-      res.status(500).json({error: err});
-    }
-
-    if(updatedUser){
-      res.status(200).json({user: updatedUser});
-    } else {
-      res.status(400).json({error: 'Looks like we can find you, have you signed up?'});
-    }
-
-
-  });
-
-};
+}
 
 AuthController.startPasswordReset = (req, res) => {
   
-  var User = req.app.models.user;
+  var User = req.app.models.User;
 
   var userEmail = req.body.email;
 
-  User.findOne({email: userEmail}, function(err, user){
-    if(err){
-      return res.status(500).json({
-        error: err
-      });
-    }
-    if(user){
-
+  User.findOne({email: userEmail})
+    .then(function(user){
       const emailToken = jwt.sign({
         userEmail: user.email,
         id: user.id,
         exp: Math.floor(Date.now() / 1000) + (60 * 60)
-      }, jwtSecret);
-      
+      }, jwtSecret)
+
       mailer.sendEmail({
         "From": "jordan@cauley.co",
         "To": user.email,
         "Subject": "Reset Your BeerNC Password", 
         "TextBody": '<a href="' + process.env.ROOT_URL + '/password/reset/' + emailToken + '>Click here to reset your Email</a>'
-      });
+      })
 
       return res.status(200).json({
         reset: 'running'
-      });
+      })
 
-    } else {
 
+    })
+    .catch(function(err){
       return res.status(500).json({
-        error: 'Looks like we can find you, have you signed up?'
-      });
-
-    }
-  
-  });
-
-};
+        error: err
+      })
+    })
+}
 
 AuthController.renderForm = (req, res) => {
 
   res.render('pages/password-reset', {
     token: req.params.token
-  });
+  })
 
-};
+}
 
 AuthController.savePasswordReset = (req, res) => {
 
@@ -144,30 +104,23 @@ AuthController.savePasswordReset = (req, res) => {
   if(pass != confirm){
     return res.json({
       nope: 'That password doesn\'t look right to me'
-    });
+    })
   }
 
-  User.update(decoded.id, {password: pass}, function(err, updatedUser){
-
-    if(err){
-      res.status(500).json({error: err});
-    }
-
-    if(updatedUser){
-      res.status(200).json({
+  User.update({password: pass}, {
+      where: {
+        id: req.user.id
+      }
+    })
+    .then(function(user){
+      return res.status(200).json({
         user: updatedUser
-      });
-    } else {
-      res.status(400).json({
-        error: 'Looks like we can find you, have you signed up?'
-      });
-    }
-
-  });
-
-
-
-
-};
+      })
+    })
+    .catch(function(err){
+      return res.status(500).json({error: err})
+    })
+  
+}
 
 module.exports = AuthController;
