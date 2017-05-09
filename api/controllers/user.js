@@ -8,23 +8,20 @@ const UserController = {};
 
 UserController.create = (req, res) => {
 
-  const User = req.app.models.user;
+  const User = req.app.models.User;
 
-  User.create(req.body, function(err, user){
-    
-    if( err ){
-      res.status(500).json({
-        error: err
-      });
-    }
-
-    if(user){
+  User.create(req.body)
+    .then(function(user){
       res.status(201).json({
         user: user
       });
-    }
+    })
+    .catch(function(err){
+      res.status(500).json({
+        error: err
+      });
+    })
 
-  });
 };
 
 UserController.update = (req, res) => {
@@ -45,25 +42,53 @@ UserController.update = (req, res) => {
 };
 
 UserController.find = (req, res) => {
-  const User = req.app.models.user;
 
-  var findQuery = User.find();
+  const sequelize = req.app.models.sequelize
+  const User = req.app.models.User;
 
-  findQuery.exec(function(err, users){
-    
-    if( err ){
+  // User.findAll({})
+  //   .then(function(users){
+  //     res.status(201).json({
+  //       users: users
+  //     });
+  //   })
+  //   .catch(function(err){
+  //     res.status(500).json({
+  //       error: err
+  //     });
+  //   })
+  let query = 'SELECT * FROM "Users" AS "User"'
+
+  sequelize.query(query, { model: User })
+    .then(function(users){
+      res.status(201).json({
+        user: users
+      });
+    }).catch(function(err){
       res.status(500).json({
         error: err
       });
-    }
+    })
 
-    if(users){
-      res.status(200).json({
-        users: users
-      });
-    }
+  // const User = req.app.models.user;
 
-  });
+  // var findQuery = User.find();
+
+  // findQuery.exec(function(err, users){
+    
+  //   if( err ){
+  //     res.status(500).json({
+  //       error: err
+  //     });
+  //   }
+
+  //   if(users){
+  //     res.status(200).json({
+  //       users: users
+  //     });
+  //   }
+
+  // });
 };
 
 UserController.findById = (req, res) => {

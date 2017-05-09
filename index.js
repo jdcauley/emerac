@@ -22,6 +22,8 @@ fs.readdirSync(normalizedPath).forEach(function(file) {
   Controllers[fileName[0]] = require("./api/controllers/" + file);
 });
 
+console.log(Controllers)
+
 
 var apiPrefix = '/api/v1';
 const app = express();
@@ -37,6 +39,7 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.models = Models;
 
 
 app.get('/', (req, res) => {
@@ -52,10 +55,11 @@ app.get('/api/v1/routes', (req, res) => {
   })
 })
 
+app.get( apiPrefix + '/status', Controllers.status.find );
 
 // User Routes
 app.post( apiPrefix + '/users', Controllers.user.create );
-app.get( apiPrefix + '/users', expressJwt({secret: jwtSecret}), Controllers.user.find );
+app.get( apiPrefix + '/users', Controllers.user.find );
 app.get( apiPrefix + '/users/:id', expressJwt({secret: jwtSecret}), Controllers.user.findById );
 app.put( apiPrefix + '/users', expressJwt({secret: jwtSecret}), Controllers.user.update);
 app.delete( apiPrefix + '/api/v1/users/:id', expressJwt({secret: jwtSecret}), Controllers.user.destroy );
@@ -67,13 +71,6 @@ app.post( apiPrefix + '/auth/password/reset/start', Controllers.auth.startPasswo
 app.get( '/password/reset/:token', Controllers.auth.renderForm );
 app.post( apiPrefix + '/auth/password/reset/', Controllers.auth.savePasswordReset );
 
-// Action Routes
-
-app.post( '/api/v1/bookmarks', expressJwt({secret: jwtSecret}), Controllers.bookmark.create );
-app.get( '/api/v1/bookmarks', expressJwt({secret: jwtSecret}), Controllers.bookmark.find );
-app.get( '/api/v1/bookmarks/:id', expressJwt({secret: jwtSecret}), Controllers.bookmark.findOne );
-app.delete( '/api/v1/bookmarks/:id', expressJwt({secret: jwtSecret}), Controllers.bookmark.destroy );
-
 
 app.get('*', function(req, res){
 
@@ -81,17 +78,8 @@ app.get('*', function(req, res){
 
 });
 
+var port = process.env.PORT || 3000;
 
-Models.waterline.initialize(Models.config, function(err, models) {
-  if(err) throw err;
-
-  app.models = models.collections;
-  app.connections = models.connections;
- 
-  var port = process.env.PORT || 3000;
-
-  app.listen(port, () => {
-    console.log('serving: http://localhost:' + port);
-  });
-
+app.listen(port, () => {
+  console.log('serving: http://localhost:' + port);
 });
