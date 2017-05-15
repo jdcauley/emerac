@@ -9,7 +9,7 @@ const AuthController = {}
 
 AuthController.login = (req, res) => {
   if (!req.body.email || !req.body.password) {
-    res.status(500).json({
+    return res.status(500).json({
       error: 'All Fields are Required'
     })
   }
@@ -76,7 +76,7 @@ AuthController.startPasswordReset = (req, res) => {
 }
 
 AuthController.renderForm = (req, res) => {
-  res.render('pages/password-reset', {
+  return res.render('pages/password-reset', {
     token: req.params.token
   })
 }
