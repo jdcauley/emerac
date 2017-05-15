@@ -2,8 +2,8 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const jwtSecret = process.env.JWT_SECRET
 
-var postmark = require('postmark')
-var mailer = new postmark.Client(process.env.POSTMARK_KEY)
+const postmark = require('postmark')
+const mailer = new postmark.Client(process.env.POSTMARK_KEY)
 
 const AuthController = {}
 
@@ -14,7 +14,7 @@ AuthController.login = (req, res) => {
     })
   }
 
-  var User = req.app.models.User
+  const User = req.app.models.User
 
   User.findOne({email: req.body.email})
     .then(function (user) {
@@ -29,8 +29,10 @@ AuthController.login = (req, res) => {
           }, jwtSecret)
 
           return res.status(200).json({
-            id: token,
-            user_id: user.id
+            auth: {
+              id: token,
+              user_id: user.id
+            }
           })
         } else {
           return res.status(400).json({
@@ -45,9 +47,8 @@ AuthController.login = (req, res) => {
 }
 
 AuthController.startPasswordReset = (req, res) => {
-  var User = req.app.models.User
-
-  var userEmail = req.body.email
+  const User = req.app.models.User
+  let userEmail = req.body.email
 
   User.findOne({email: userEmail})
     .then(function (user) {
