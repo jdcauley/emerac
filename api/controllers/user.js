@@ -1,96 +1,108 @@
-const jwt = require('jsonwebtoken');
-const jwtSecret = process.env.JWT_SECRET;
+const jwt = require('jsonwebtoken')
+const jwtSecret = process.env.JWT_SECRET
 
-var postmark = require("postmark");
-var mailer = new postmark.Client(process.env.POSTMARK_KEY);
-
-const UserController = {};
+const UserController = {}
 
 UserController.create = (req, res) => {
-
-  const User = req.app.models.User;
+  const User = req.app.models.User
 
   User.create(req.body)
-    .then(function(user){
-      res.status(201).json({
-        user: user
-      });
-    })
-    .catch(function(err){
-      res.status(500).json({
-        error: err
-      });
-    })
+  .then((user) => {
+    const token = jwt.sign({
+      email: user.email,
+      id: user.id
+    }, jwtSecret)
 
-};
-
-UserController.update = (req, res) => {
-  
-  const User = req.app.models.User;
-
-  User.update(req.body, {
-      where: {
-        id: req.user.id
+    return res.status(201).json({
+      user: user,
+      auth: {
+        id: token,
+        userId: user.id
       }
     })
-    .then(function(user){
-      return res.status(200).json({
-        user: user
-      })
+  })
+  .catch((err) => {
+    return res.status(500).json({
+      error: err
     })
-    .catch(function(err){
-      return res.status(500).json(err)
-    })
+  })
+}
 
+UserController.update = (req, res) => {
+  const User = req.app.models.User
+
+  User.update(req.body, {
+    where: {
+      id: req.user.id
+    }
+  })
+  .then((user) => {
+    return res.status(200).json({
+      user: user
+    })
+  })
+  .catch((err) => {
+    return res.status(500).json(err)
+  })
 }
 
 UserController.find = (req, res) => {
+  const User = req.app.models.User
 
-  const User = req.app.models.User;
+  let query = {}
+  let params = req.query
 
-  User.findAll({})
-    .then(function(users){
-      res.status(201).json({
-        users: users
-      });
+  if (params.limit) {
+    query.limit = params.limit
+  }
+
+  if (params.offset) {
+    query.offset = params.offset
+  }
+
+  User.findAll(query)
+  .then((users) => {
+    return res.status(201).json({
+      users: users
     })
-    .catch(function(err){
-      res.status(500).json({
-        error: err
-      });
+  })
+  .catch((err) => {
+    return res.status(500).json({
+      error: err
     })
+  })
 }
 
 UserController.findById = (req, res) => {
-  const User = req.app.models.User;
+  const User = req.app.models.User
 
-  User.findOne({id: req.params.id})
-    .then(function(user){
-      return res.status(200).json({
-        user: user
-      })
+  User.findById(req.params.id)
+  .then((user) => {
+    return res.status(200).json({
+      user: user
     })
-    .catch(function(err){
-      return res.status(500).json(err)
-    })
+  })
+  .catch((err) => {
+    return res.status(500).json(err)
+  })
 }
 
 UserController.destroy = (req, res) => {
+  const User = req.app.models.User
 
-  var User = req.app.models.User;
-
-  User.destroy({id: req.params.id}, function(err, user){
-    if(err){
-      res.status(500).json(err);
+  User.destroy({
+    where: {
+      id: req.user.id
     }
-    if(user){
+  })
+  .then((user) => {
+    return res.status(200).json({
+      deleted: user
+    })
+  })
+  .catch((err) => {
+    return res.status(500).json(err)
+  })
+}
 
-      res.status(200).json({
-        removed: user
-      });
-    }
-  });
-
-};
-
-module.exports = UserController;
+module.exports = UserController
