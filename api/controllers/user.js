@@ -89,7 +89,6 @@ UserController.findById = (req, res) => {
 
 UserController.destroy = (req, res) => {
   const User = req.app.models.User
-
   User.destroy({
     where: {
       id: req.user.id
