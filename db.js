@@ -1,33 +1,37 @@
-const fs = require('fs');
-const path = require('path');
-const postgresAdapter = require('sails-postgresql');
-const diskAdapter = require('sails-disk');
-const Waterline = require('waterline');
-const orm = new Waterline();
+const fs = require('fs')
+const path = require('path')
+const Sequelize = require('sequelize')
 
-var migration = process.env.MIGRATE || 'alter';
+if (process.env.DATABASE_URL) {
+  var sequelize = new Sequelize(process.env.DATABASE_URL)
+}
 
-const db = {
-  adapters: {
-    postgresql: postgresAdapter
-  },
-   connections: {
-    postgres: {
-      adapter: 'postgresql',
-      url: process.env.DATABASE_URL,
-      ssl: process.env.SSL_STATUS
-    }
+var db = {}
+
+var normalizedPath = path.join(__dirname, 'api/models')
+
+fs.readdirSync(normalizedPath).forEach((file) => {
+  var model = sequelize.import(path.join(normalizedPath, file))
+  db[model.name] = model
+})
+
+Object.keys(db).forEach((modelName) => {
+  if ('associate' in db[modelName]) {
+    db[modelName].associate(db)
   }
-};
+})
 
-var normalizedPath = path.join(__dirname, 'api/models');
+sequelize
+.sync({ force: false })
+.then(() => {
+  console.log('DB Connection Success')
+})
+.catch((err) => {
+  console.log('DB Error')
+  console.log(err)
+})
 
-fs.readdirSync(normalizedPath).forEach(function(file) {
-  var model = require("./api/models/" + file);
-  model.migrate = migration;
-  model.connection = 'postgres';
-  model = Waterline.Collection.extend(model);
-  orm.loadCollection(model);
-});
+db.sequelize = sequelize
+db.Sequelize = Sequelize
 
-module.exports = {waterline: orm, config: db};
+module.exports = db
