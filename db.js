@@ -10,12 +10,12 @@ var db = {}
 
 var normalizedPath = path.join(__dirname, 'api/models')
 
-fs.readdirSync(normalizedPath).forEach(function (file) {
+fs.readdirSync(normalizedPath).forEach((file) => {
   var model = sequelize.import(path.join(normalizedPath, file))
   db[model.name] = model
 })
 
-Object.keys(db).forEach(function (modelName) {
+Object.keys(db).forEach((modelName) => {
   if ('associate' in db[modelName]) {
     db[modelName].associate(db)
   }
@@ -24,10 +24,11 @@ Object.keys(db).forEach(function (modelName) {
 sequelize
 .sync({ force: false })
 .then(() => {
-  console.log('It worked!')
+  console.log('DB Connection Success')
 })
 .catch((err) => {
-  console.log('An error occurred while creating the table:', err)
+  console.log('DB Error')
+  console.log(err)
 })
 
 db.sequelize = sequelize

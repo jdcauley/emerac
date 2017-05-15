@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt')
 
-module.exports = function (sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   var User = sequelize.define('User', {
     username: {
       type: DataTypes.STRING,
@@ -40,13 +40,13 @@ module.exports = function (sequelize, DataTypes) {
 
   })
 
-  User.beforeCreate(function (data, options, next) {
-    bcrypt.genSalt(10, function (err, salt) {
+  User.beforeCreate((data, options, next) => {
+    bcrypt.genSalt(10, (err, salt) => {
       if (err) {
         return next(err)
       }
 
-      bcrypt.hash(data.dataValues.password, salt, function (err, hash) {
+      bcrypt.hash(data.dataValues.password, salt, (err, hash) => {
         if (err) {
           return next(err)
         }
