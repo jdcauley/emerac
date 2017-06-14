@@ -52,6 +52,4 @@ DATABASE_URL=postgres://localhost:5432/your-local-db-name
 See the .env example for more
 
 ### Create a postgres database.
-I'm on OSX and used http://postgresapp.com
-
-Creating a Postgres db is probably thi
+I'm on OSX and used http://postgresapp.com to create and manage a local posgres db.
