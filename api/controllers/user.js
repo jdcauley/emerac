@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const jwtSecret = process.env.JWT_SECRET
+let JWT_SECRET = process.env.JWT_SECRET || 'use-this-or-gen-new-secret'
 
 const UserController = {}
 
@@ -11,7 +11,7 @@ UserController.create = (req, res) => {
     const token = jwt.sign({
       email: user.email,
       id: user.id
-    }, jwtSecret)
+    }, JWT_SECRET)
 
     return res.status(201).json({
       user: user,
