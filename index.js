@@ -11,12 +11,19 @@ const jwtSecret = process.env.JWT_SECRET
 // fetch controllers
 const Models = require('./db.js')
 const Controllers = {}
+const Services = {}
 
-var normalizedPath = path.join(__dirname, 'api/controllers')
+let controllerPath = path.join(__dirname, 'api/controllers')
+let servicesPath = path.join(__dirname, 'api/services')
 
-fs.readdirSync(normalizedPath).forEach((file) => {
+fs.readdirSync(controllerPath).forEach((file) => {
   var fileName = file.split('.')
   Controllers[fileName[0]] = require('./api/controllers/' + file)
+})
+
+fs.readdirSync(servicesPath).forEach((file) => {
+  var fileName = file.split('.')
+  Services[fileName[0]] = require('./api/services/' + file)
 })
 
 var apiPrefix = '/api/v1'
@@ -34,6 +41,7 @@ app.use(function (req, res, next) {
 })
 
 app.models = Models
+app.services = Services
 
 app.get('/', (req, res) => {
   res.status(200).json({

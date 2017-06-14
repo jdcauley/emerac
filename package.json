@@ -1,31 +1,36 @@
 {
-  "name": "flyingmonkey",
+  "name": "emerac",
   "version": "1.0.0",
-  "description": "api service for js script to fire mailchimp modals with options",
+  "description": "Lightweight Express Boilerplate",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CardinalMedia/emerac.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CardinalMedia/emerac/issues"
   },
   "author": "Jordan Cauley",
   "license": "MIT",
   "dependencies": {
     "async": "^2.1.5",
     "bcrypt": "^1.0.2",
-    "bluebird": "^3.4.7",
     "body-parser": "^1.16.1",
     "dotenv": "^4.0.0",
     "ejs": "^2.5.6",
     "express": "^4.14.1",
     "express-jwt": "^5.1.0",
-    "fs": "0.0.1-security",
     "https": "^1.0.0",
     "jsonwebtoken": "^7.3.0",
-    "mailchimp-api-v3": "^1.7.0",
     "pg": "^6.1.5",
     "pg-hstore": "^2.3.2",
     "postmark": "^1.3.1",
-    "sequelize": "^3.30.4"
+    "sequelize": "^3.30.4",
+    "sqlite3": "^3.1.8"
   },
   "devDependencies": {
     "standard": "^10.0.2"

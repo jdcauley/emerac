@@ -1,10 +1,7 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const jwtSecret = process.env.JWT_SECRET
-
-const postmark = require('postmark')
-const mailer = new postmark.Client(process.env.POSTMARK_KEY)
-
+let JWT_SECRET = process.env.JWT_SECRET || 'use-this-or-gen-new-secret'
+let ROOT_URL = process.env.ROOT_URL || 'http://localhost:3000'
 const AuthController = {}
 
 AuthController.login = (req, res) => {
@@ -26,7 +23,7 @@ AuthController.login = (req, res) => {
           const token = jwt.sign({
             email: user.email,
             id: user.id
-          }, jwtSecret)
+          }, JWT_SECRET)
 
           return res.status(200).json({
             auth: {
@@ -56,13 +53,13 @@ AuthController.startPasswordReset = (req, res) => {
         userEmail: user.email,
         id: user.id,
         exp: Math.floor(Date.now() / 1000) + (60 * 60)
-      }, jwtSecret)
+      }, JWT_SECRET)
 
-      mailer.sendEmail({
-        'From': 'jordan@cauley.co',
+      req.app.Services.mailer.send({
+        'From': process.env.SENDING_ADDRESS || 'test@mail.com',
         'To': user.email,
-        'Subject': 'Reset Your BeerNC Password',
-        'TextBody': '<a href="' + process.env.ROOT_URL + '/password/reset/' + emailToken + '>Click here to reset your Email</a>'
+        'Subject': 'Reset Your Password',
+        'TextBody': '<a href="' + ROOT_URL + '/password/reset/' + emailToken + '>Click here to reset your Email</a>'
       })
 
       return res.status(200).json({
@@ -86,7 +83,7 @@ AuthController.savePasswordReset = (req, res) => {
   let token = req.body.token
   let pass = req.body.password
   let confirm = req.body.confirmation
-  let decoded = jwt.verify(token, jwtSecret)
+  let decoded = jwt.verify(token, JWT_SECRET)
 
   var User = req.app.models.User
 

@@ -1,9 +1,15 @@
 const fs = require('fs')
 const path = require('path')
 const Sequelize = require('sequelize')
+let sequelize = null
 
 if (process.env.DATABASE_URL) {
-  var sequelize = new Sequelize(process.env.DATABASE_URL)
+  sequelize = new Sequelize(process.env.DATABASE_URL)
+} else {
+  sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: './db.sqlite'
+  })
 }
 
 var db = {}
