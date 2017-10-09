@@ -10,3 +10,5 @@ var port = process.env.PORT || 3000
 app.listen(port, () => {
   console.log('serving: http://localhost:' + port)
 })
+
+module.exports = app

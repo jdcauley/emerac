@@ -62,7 +62,7 @@ UserController.find = (req, res) => {
 
   User.findAll(query)
   .then((users) => {
-    return res.status(201).json({
+    return res.status(200).json({
       users: users
     })
   })
