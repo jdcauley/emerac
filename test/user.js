@@ -15,50 +15,91 @@ chai.use(chaiHttp);
 describe('Users', () => {
 
   let username = faker.Internet.userName()
-  let email = faker.Internet.email();
-    // beforeEach((done) => { //Before each test we empty the database
-    //     User.destroy({
-    //       where: {},
-    //       truncate: true
-    //     })
-    // });
-/*
-  * Test the /GET route
+  let email = faker.Internet.email()
+  let response = null
+
+  before((done) => { //Before each test we empty the database
+    return done()
+  });
+
+  /*
+  * Test the /POST route
   */
-  describe('/GET user', () => {
-      it('it should GET all users', (done) => {
-        chai.request(server)
-            .get('/api/v1/users')
-            .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object')
-                res.body.users.should.be.a('array')
-              done()
-            })
-      })
-  })
 
   describe('/POST user', () => {
-      it('it should Create a USER', (done) => {
-        chai.request(server)
-            .post('/api/v1/users')
-            .send({
-              "username": username,
-              "email": email,
-              "password": "password123"
-            })
-            .end((err, res) => {
-                chai.expect(res).to.be.json
-                res.should.have.status(201)
-                res.body.should.be.a('object')
-                res.body.should.have.property('auth')
-                res.body.should.have.property('user')
-                res.body.user.should.have.property('id')
-                res.body.user.should.have.property('username')
-                res.body.user.should.have.property('email')
-              done();
-            })
-      })
+
+    before((done) => {
+      chai.request(server)
+        .post('/api/v1/users')
+        .send({
+          "username": username,
+          "email": email,
+          "password": "password123"
+        }).end((err, res) => {
+          response = res
+          return done()
+        })
+    })
+      
+    it('it should have STATUS 201', (done) => {
+      response.should.have.status(201)
+      return done()
+    })
+
+    it('it should CREATE a USER', (done) => {
+      response.body.should.have.property('user')
+      response.body.user.should.have.property('id')
+      response.body.user.should.have.property('username')
+      response.body.user.should.have.property('email')
+      return done()
+    })
+
+    it('it should CREATE an AUTH', (done) => {
+      response.body.should.have.property('user')
+      return done()
+    })
+
   })
+
+  /*
+  * Test the /GET route
+  */
+
+  describe('/GET user', () => {
+    before((done) => {
+      chai.request(server)
+        .get('/api/v1/users')
+        .end((err, res) => {
+          response = res
+          return done()
+        })
+    })
+
+    it('it should have STATUS 200', (done) => {
+      response.should.have.status(200)
+      return done()
+    })
+
+    it('it should GET all users', (done) => {
+      response.body.should.be.a('object')
+      response.body.users.should.be.a('array')
+      response.body.users.should.have.length(1)
+      return done()
+    })
+  })
+
+  after( function(done) {
+    console.log('Done')
+    User.destroy({
+      where: {},
+      truncate: true
+    }).then((user) => {
+      return done()
+    })
+    .catch((err) => {
+      console.log(err)
+      return done()
+    })
+  }); 
 
 })
