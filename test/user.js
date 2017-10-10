@@ -1,27 +1,28 @@
 process.env.NODE_ENV = 'test'
 
-// Require the dev-dependencies
 let chai = require('chai')
 let chaiHttp = require('chai-http')
-let server = require('../index.js')
 let should = chai.should()
 let faker = require('faker')
 
+let server = require('../index.js')
 const Models = require('../db.js')
 const User = Models.User
 
 chai.use(chaiHttp)
-// Our parent block
+
 describe('Users', () => {
   let username = faker.Internet.userName()
   let email = faker.Internet.email()
   let response = null
+  let userID = null
+  let auth = null
 
   /*
   * Test the /POST route
   */
 
-  describe('/POST user', () => {
+  describe('POST users', () => {
     before((done) => {
       chai.request(server)
         .post('/api/v1/users')
@@ -35,7 +36,7 @@ describe('Users', () => {
         })
     })
 
-    it('it should have STATUS 201', () => {
+    it(`it should have STATUS 201`, () => {
       response.should.have.status(201)
     })
 
@@ -51,11 +52,38 @@ describe('Users', () => {
     })
   })
 
+    describe('GET user by ID', () => {
+      before((done) => {
+        userID = response.body.user.id
+        auth = response.body.auth.id
+        chai.request(server)
+          .get(`/api/v1/users/${response.body.user.id}`)
+          .set(`Authorization`, `bearer ${auth}`)
+          .end((err, res) => {
+            response = res
+            return done()
+          })
+      })
+
+      it('it should have STATUS 200', () => {
+        response.should.have.status(200)
+      })
+
+      it(`it should get one USER`, () => {
+        response.body.should.be.a('object')
+        response.body.user.should.be.a('object')
+        response.body.user.should.have.property('id', userID)
+
+      })
+
+    })
+
+
   /*
-  * Test the /GET route
+  * Test the GET route
   */
 
-  describe('/GET user', () => {
+  describe('GET users', () => {
     before((done) => {
       chai.request(server)
         .get('/api/v1/users')
