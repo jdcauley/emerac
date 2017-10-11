@@ -31,12 +31,18 @@ UserController.create = (req, res) => {
 UserController.update = (req, res) => {
   const User = req.app.models.User
 
-  User.update(req.body, {
+  User.findOne({
     where: {
       id: req.user.id
     }
   })
+  .then((UserInstance) => {
+    return UserInstance.updateAttributes(req.body)
+  })
   .then((user) => {
+    user = user.get({plain: true})
+    delete user.password
+
     return res.status(200).json({
       user: user
     })

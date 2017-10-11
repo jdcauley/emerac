@@ -16,6 +16,7 @@ module.exports = (app) => {
   app.post(apiPrefix + '/users', app.controllers.user.create)
   app.get(apiPrefix + '/users', expressJwt({secret: JWT_SECRET, credentialsRequired: false}), app.controllers.user.find)
   app.get(apiPrefix + '/users/:id', expressJwt({secret: JWT_SECRET}), app.controllers.user.findById)
+  app.patch(apiPrefix + '/users', expressJwt({secret: JWT_SECRET}), app.controllers.user.update)
   app.put(apiPrefix + '/users', expressJwt({secret: JWT_SECRET}), app.controllers.user.update)
   app.delete(apiPrefix + '/users', expressJwt({secret: JWT_SECRET}), app.controllers.user.destroy)
 

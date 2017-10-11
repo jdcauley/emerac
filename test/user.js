@@ -14,6 +14,7 @@ chai.use(chaiHttp)
 describe('Users', () => {
   let username = faker.Internet.userName()
   let email = faker.Internet.email()
+  let updatedEmail = faker.Internet.email()
   let response = null
   let userID = null
   let auth = null
@@ -78,6 +79,35 @@ describe('Users', () => {
 
     })
 
+  /*
+  * Test the PUT route
+  */
+
+  describe('Put user', () => {
+    before((done) => {
+      chai.request(server)
+        .put('/api/v1/users')
+        .set(`Authorization`, `bearer ${auth}`)
+        .send({
+          email: updatedEmail
+        })
+        .end((err, res) => {
+          response = res
+          return done()
+        })
+
+    })
+
+    it('it should have STATUS 200', () => {
+      response.should.have.status(200)
+    })
+
+    it('it should UPDATE USER', () => {
+      response.body.user.should.have.property('email', updatedEmail)
+    })
+
+
+  })
 
   /*
   * Test the GET route
