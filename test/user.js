@@ -139,9 +139,11 @@ describe('Users', () => {
       where: {},
       truncate: true
     }).then((user) => {
+      server.close()
       return done()
     })
     .catch((err) => {
+      server.close()
       return done()
     })
   })
