@@ -13,7 +13,11 @@ AuthController.login = (req, res) => {
 
   const User = req.app.models.User
 
-  User.findOne({email: req.body.email})
+  User.findOne({
+    where: {
+      email: req.body.email
+    }
+  })
     .then(function (user) {
       bcrypt.compare(req.body.password, user.password, function (err, isMatch) {
         if (err) {
