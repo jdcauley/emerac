@@ -26,9 +26,11 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     instanceMethods: {
       toJSON: function () {
-        var values = Object.assign({}, this.get())
+        const {
+          password,
+          ...values
+        } = this.get()
 
-        delete values.password
         return values
       }
     },
