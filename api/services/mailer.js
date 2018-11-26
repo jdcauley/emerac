@@ -5,14 +5,12 @@ const postmark = new Postmark.Client(POSTMARK_KEY)
 const Mailer = {}
 
 Mailer.sendMail = (envelope) => {
-
-  if ( POSTMARK_KEY === 'no-key' ) {
+  if (POSTMARK_KEY === 'no-key') {
     console.log(mail)
     return
   }
 
   postmark.sendEmail(envelope)
-
 }
 
 module.exports = Mailer

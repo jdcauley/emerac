@@ -3,11 +3,12 @@ let JWT_SECRET = process.env.JWT_SECRET || 'use-this-or-gen-new-secret'
 
 const UserController = {}
 
-UserController.create = (req, res) => {
+UserController.create = async (req, res) => {
   const User = req.app.models.User
 
-  User.create(req.body)
-  .then((user) => {
+  try {
+    const user = await User.create(req.body)
+
     const token = jwt.sign({
       email: user.email,
       id: user.id
@@ -20,12 +21,12 @@ UserController.create = (req, res) => {
         userId: user.id
       }
     })
-  })
-  .catch((err) => {
+
+  } catch(err) {
     return res.status(500).json({
       error: err
     })
-  })
+  }
 }
 
 UserController.update = (req, res) => {
@@ -82,7 +83,7 @@ UserController.find = (req, res) => {
 UserController.findById = (req, res) => {
   const User = req.app.models.User
 
-  User.findById(req.params.id)
+  User.findById(req.user.id)
   .then((user) => {
     return res.status(200).json({
       user: user

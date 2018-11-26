@@ -1,2 +1,2 @@
-module.exports = function setup () { 
+module.exports = function setup () {
 }

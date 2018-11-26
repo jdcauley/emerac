@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   })
 
-  User.prototype.toJSON = function() {
+  User.prototype.toJSON = function () {
     const {
       password,
       ...values
@@ -33,11 +33,11 @@ module.exports = (sequelize, DataTypes) => {
 
     return values
   }
-  
-  User.beforeCreate((user, options) => {	
-    return bcrypt.hash(user.password, 10).then(function(hash) {	
-      user.password = hash;	
-    })	
+
+  User.beforeCreate((user, options) => {
+    return bcrypt.hash(user.password, 10).then(function (hash) {
+      user.password = hash
+    })
   })
 
   return User

@@ -2,7 +2,6 @@ const expressJwt = require('express-jwt')
 let JWT_SECRET = process.env.JWT_SECRET || 'use-this-or-gen-new-secret'
 
 module.exports = (app) => {
-
   var apiPrefix = app.apiPrefix
 
   app.get(apiPrefix + '/routes', (req, res) => {
@@ -13,7 +12,7 @@ module.exports = (app) => {
   app.get(apiPrefix + '/status', app.controllers.status.find)
 
   // User Routes
-  app.post(apiPrefix + '/users', app.controllers.user.create)
+  app.post(`${apiPrefix}/users`, app.controllers.user.create)
   app.get(apiPrefix + '/users', expressJwt({secret: JWT_SECRET, credentialsRequired: false}), app.controllers.user.find)
   app.get(apiPrefix + '/users/:id', expressJwt({secret: JWT_SECRET}), app.controllers.user.findById)
   app.patch(apiPrefix + '/users', expressJwt({secret: JWT_SECRET}), app.controllers.user.update)
