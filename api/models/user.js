@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt')
 
 module.exports = (sequelize, DataTypes) => {
-  var User = sequelize.define('User', {
+  const User = sequelize.define('User', {
     username: {
       type: DataTypes.STRING,
       unique: true,
@@ -23,38 +23,20 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true
       }
     }
-  }, {
-    instanceMethods: {
-      toJSON: function () {
-        var values = Object.assign({}, this.get())
-
-        delete values.password
-        return values
-      }
-    },
-    classMethods: {
-      // associate: function(models) {
-      //   User.hasMany(models.Task)
-    }
-  }, {
-
   })
 
-  User.beforeCreate((data, options, next) => {
-    bcrypt.genSalt(10, (err, salt) => {
-      if (err) {
-        return next(err)
-      }
+  User.prototype.toJSON = function () {
+    const {
+      password,
+      ...values
+    } = this.get()
 
-      bcrypt.hash(data.dataValues.password, salt, (err, hash) => {
-        if (err) {
-          return next(err)
-        }
+    return values
+  }
 
-        data.dataValues.password = hash
-
-        return next()
-      })
+  User.beforeCreate((user, options) => {
+    return bcrypt.hash(user.password, 10).then(function (hash) {
+      user.password = hash
     })
   })
 

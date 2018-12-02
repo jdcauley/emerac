@@ -13,11 +13,15 @@ AuthController.login = (req, res) => {
 
   const User = req.app.models.User
 
-  User.findOne({email: req.body.email})
+  User.findOne({
+    where: {
+      email: req.body.email
+    }
+  })
     .then(function (user) {
       bcrypt.compare(req.body.password, user.password, function (err, isMatch) {
         if (err) {
-          return res.status(500).json({error: err})
+          return res.status(401).json({error: err})
         }
         if (isMatch) {
           const token = jwt.sign({
@@ -39,7 +43,7 @@ AuthController.login = (req, res) => {
       })
     })
     .catch(function (err) {
-      return res.status(500).json({error: err})
+      return res.status(401).json({error: err})
     })
 }
 
