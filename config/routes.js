@@ -2,6 +2,7 @@ const expressJwt = require('express-jwt')
 let JWT_SECRET = process.env.JWT_SECRET || 'use-this-or-gen-new-secret'
 
 module.exports = (app) => {
+
   var apiPrefix = app.apiPrefix
 
   app.get(apiPrefix + '/routes', (req, res) => {
@@ -32,9 +33,10 @@ module.exports = (app) => {
   })
 
   app.get('*', (req, res) => {
-    res.status(404).json({
-      error: 'Not Found'
+    return res.status(404).render('pages/404', {
+      session: req.session
     })
   })
+
   return app
 }

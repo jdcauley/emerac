@@ -29,14 +29,14 @@ AuthController.login = (req, res) => {
             id: user.id
           }, JWT_SECRET)
 
-          return res.status(200).json({
+          return res.status(201).json({
             auth: {
               id: token,
               user_id: user.id
             }
           })
         } else {
-          return res.status(400).json({
+          return res.status(401).json({
             error: 'That password doesn\'t look right to me'
           })
         }
