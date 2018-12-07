@@ -1,50 +1,55 @@
-const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-let JWT_SECRET = process.env.JWT_SECRET || 'use-this-or-gen-new-secret'
 let ROOT_URL = process.env.ROOT_URL || 'http://localhost:3000'
 const AuthController = {}
 
-AuthController.login = (req, res) => {
+AuthController.login = async (req, res) => {
   if (!req.body.email || !req.body.password) {
-    return res.status(500).json({
+    return res.status(400).json({
       error: 'All Fields are Required'
     })
   }
 
-  const User = req.app.models.User
-
-  User.findOne({
-    where: {
-      email: req.body.email
-    }
-  })
-    .then(function (user) {
-      bcrypt.compare(req.body.password, user.password, function (err, isMatch) {
-        if (err) {
-          return res.status(401).json({error: err})
+  try {
+    const user = await req.app.models.User.findOne({
+      where: {
+        email: {
+          $eq: req.body.email
         }
-        if (isMatch) {
-          const token = jwt.sign({
-            email: user.email,
-            id: user.id
-          }, JWT_SECRET)
+      }
+    })
 
-          return res.status(200).json({
-            auth: {
-              id: token,
-              user_id: user.id
-            }
-          })
-        } else {
-          return res.status(400).json({
-            error: 'That password doesn\'t look right to me'
-          })
-        }
+    if (!user) {
+      return res.status(404).json({
+        error: 'No user with this email address was found'
       })
+    }
+
+    const match = await bcrypt.compare(req.body.password, user.password)
+    
+    if (!match) {
+      return res.status(401).json({
+        error: 'Email or Password does not match'
+      })
+    }
+
+    const userToken = req.app.services.user.generateNewToken({
+      id: user.id,
+      email: user.email,
     })
-    .catch(function (err) {
-      return res.status(401).json({error: err})
+
+    return res.status(201).json({
+      auth: {
+        id: userToken,
+        user_id: user.id
+      }
     })
+
+  } catch(err) {
+    return res.status(500).json({
+      error: err
+    })
+  }
+
 }
 
 AuthController.startPasswordReset = (req, res) => {
@@ -78,7 +83,7 @@ AuthController.startPasswordReset = (req, res) => {
 }
 
 AuthController.renderForm = (req, res) => {
-  return res.render('pages/password-reset', {
+  return res.render('auth/password-reset', {
     token: req.params.token
   })
 }
