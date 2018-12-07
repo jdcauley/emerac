@@ -11,8 +11,6 @@ let token = null
 
 const userEmail = faker.internet.email()
 const userPass = faker.internet.password()
-const domain = faker.internet.domainName()
-const slug = faker.lorem.slug()
 
 beforeAll(async() => {
   await boot.then( async (app) => {

@@ -3,14 +3,7 @@ let JWT_SECRET = process.env.JWT_SECRET || 'use-this-or-gen-new-secret'
 
 module.exports = (app) => {
 
-  var apiPrefix = app.apiPrefix
-
-  app.get(apiPrefix + '/routes', (req, res) => {
-    return res.status(200).json({
-      endpoints: app._router.stack.filter(r => r.route).map(r => r.route.path)
-    })
-  })
-  app.get(apiPrefix + '/status', app.controllers.status.find)
+  const apiPrefix = app.apiPrefix
 
   // User Routes
   app.post(`${apiPrefix}/users`, app.controllers.user.create)
@@ -26,14 +19,20 @@ module.exports = (app) => {
   app.get('/password/reset/:token', app.controllers.auth.renderForm)
   app.post(apiPrefix + '/auth/password/reset/', app.controllers.auth.savePasswordReset)
 
-  app.get('/', (req, res) => {
-    res.status(200).json({
+  app.get(apiPrefix + '/routes', (req, res) => {
+    return res.status(200).json({
+      endpoints: app._router.stack.filter(r => r.route).map(r => r.route.path)
+    })
+  })
+  
+  app.get(apiPrefix + '/status', (req, res) => {
+    return res.status(200).json({
       apiStatus: 'ok'
     })
   })
 
   app.get('*', (req, res) => {
-    return res.status(404).render('pages/404', {
+    return res.status(404).render('404', {
       session: req.session
     })
   })
