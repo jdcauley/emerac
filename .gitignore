@@ -1,5 +1,7 @@
 npm-debug.log
 node_modules
 .env
+*.log
 .DS_Store
 *.sqlite
+build
