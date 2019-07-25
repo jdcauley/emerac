@@ -12,8 +12,13 @@ module.exports = async () => {
 
   try {
     fs.readdirSync(normalizedPath).forEach((file) => {
-      const model = sequelize.import(path.join(normalizedPath, file))
-      db[model.name] = model
+      console.log(file)
+      console.log(path.join(normalizedPath, file))
+      const modelFunction = require(path.join(normalizedPath, file))
+      
+      const result = modelFunction(sequelize, Sequelize.DataTypes, Sequelize)
+
+      db[result.name] = result
     })
   
     Object.keys(db).forEach((modelName) => {
