@@ -35,9 +35,9 @@
     "passport-jwt": "^4.0.0",
     "pg": "^7.4.3",
     "pg-hstore": "^2.3.2",
-    "postmark": "^1.6.1",
+    "postmark": "^2.2.8",
     "query-string": "^6.2.0",
-    "sequelize": "^4.39.0",
+    "sequelize": "^6.0.0",
     "sqlite3": "^4.0.4"
   },
   "devDependencies": {
@@ -46,7 +46,7 @@
     "@types/node": "^10.12.18",
     "@types/raven": "^2.5.1",
     "faker": "^4.1.0",
-    "jest": "^23.6.0",
+    "jest": "^24.8.0",
     "standard": "^10.0.2",
     "superagent": "^4.1.0",
     "supertest": "^3.3.0",
